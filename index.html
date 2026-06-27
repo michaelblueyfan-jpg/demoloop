@@ -6,6 +6,9 @@
     
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <link rel="apple-touch-icon" href="app_icon.png">
+    
     <title>DemoLoop</title>
     
     <style>
@@ -23,7 +26,7 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Change to "contain" if you don't want it cropped */
+            object-fit: contain; /* Changed to contain so a vertical video fits perfectly */
             position: absolute;
             top: 0;
             left: 0;
@@ -38,7 +41,6 @@
     </video>
 
     <script>
-        // Optional: Ensures video plays if iOS power-saving mode tries to pause it
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('loopVideo');
             video.play().catch(error => {
