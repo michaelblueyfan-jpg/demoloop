@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <link rel="apple-touch-icon" href="app_icon.png">
+    <link align="apple-touch-icon" href="app_icon.png">
     
     <title>DemoLoop</title>
     
@@ -19,13 +19,13 @@
         }
         body, html {
             width: 100%;
-            /* 100vh is strictly required here; 100dvh causes a cold-start gap bug in PWAs */
             height: 100vh; 
             overflow: hidden;
             background-color: #000;
+            -webkit-user-select: none;
+            user-select: none;
         }
         video {
-            /* Position fixed with 0 bounds anchors the element perfectly to the glass edges */
             position: fixed;
             top: 0;
             left: 0;
@@ -47,10 +47,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('loopVideo');
+            
+            // Autoplay logic
             video.play().catch(error => {
-                console.log("Autoplay prevented. Tap anywhere to play.");
-                document.addEventListener('click', () => { video.play(); }, { once: true });
+                console.log("Autoplay prevented.");
             });
+
+            // Tap anywhere to close logic
+            document.body.addEventListener('touchstart', () => {
+                window.close();
+            }, { passive: true });
         });
     </script>
 </body>
