@@ -50,7 +50,7 @@
             background-color: #f2f2f7;
             z-index: 100;
             transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            padding: 60px 16px calc(env(safe-area-inset-bottom) + 20px) 16px;
+            padding: 60px 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
             overflow-y: auto;
         }
         
@@ -63,7 +63,7 @@
             z-index: 101;
             transform: translateX(100%);
             transition: transform 0.3s ease-in-out;
-            bottom: 0; /* Always stay active context bounds vertically */
+            bottom: 0;
         }
         #storeInfoMenu.active {
             transform: translateX(0);
@@ -87,6 +87,7 @@
             background: none;
             border: none;
             cursor: pointer;
+            padding: 10px;
         }
 
         .info-card {
@@ -110,7 +111,7 @@
         .device-serial {
             font-size: 13px;
             color: #8e8e93;
-            margin-bottom: 12px;
+            margin-bottom: 4px;
         }
         .device-status-tags {
             font-size: 14px;
@@ -118,25 +119,9 @@
             display: flex;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 15px;
         }
         .status-separator {
             color: #d1d1d6;
-        }
-
-        .warning-box {
-            background-color: #eeeeee;
-            border-radius: 10px;
-            padding: 12px;
-            font-size: 14px;
-            color: #333;
-            text-align: center;
-        }
-        .warning-icon {
-            color: #f06c24;
-            font-size: 16px;
-            margin-bottom: 4px;
-            display: block;
         }
 
         .section-label {
@@ -161,6 +146,8 @@
             text-decoration: none;
             color: #000;
             cursor: pointer;
+            /* Ensures tap registration behaves correctly on mobile */
+            pointer-events: auto; 
         }
         .settings-row:last-child {
             border-bottom: none;
@@ -198,14 +185,14 @@
             font-size: 16px;
         }
 
-        /* Build Info Footer */
+        /* Build Info Footer explicitly at the absolute bottom */
         .menu-footer {
             text-align: center;
             color: #8e8e93;
             font-size: 13px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-top: 40px;
-            margin-bottom: 20px;
+            padding-bottom: 20px;
         }
     </style>
 </head>
@@ -230,12 +217,6 @@
                 <span>Enrolled</span>
                 <span class="status-separator">|</span>
                 <span>🟢 iOS</span>
-            </div>
-            
-            <div class="warning-box">
-                <span class="warning-icon">⚠️</span>
-                <strong>Warning</strong><br>
-                Device has outdated content.<br>Use "Update" to action.
             </div>
         </div>
 
@@ -350,7 +331,7 @@
                 document.addEventListener('touchstart', () => { video.play(); }, { once: true });
             });
 
-            // 3-Finger Top-Right Trigger Loop
+            // 3-Finger Top-Right Trigger
             document.body.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 3) {
                     const screenWidth = window.innerWidth;
@@ -384,12 +365,18 @@
                 }
             }, { passive: true });
 
-            // Menu Screen Navigation Handlers
+            // Navigation Actions
             closeBtn.addEventListener('click', () => {
                 menu.classList.remove('active');
-                storeMenu.classList.remove('active'); // Reset sub-menus on close
+                storeMenu.classList.remove('active');
             });
 
+            // Using mobile touchstart event explicitly to guarantee button response
+            storeRow.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                storeMenu.classList.add('active');
+            });
+            // Fallback click listener
             storeRow.addEventListener('click', () => {
                 storeMenu.classList.add('active');
             });
