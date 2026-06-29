@@ -40,7 +40,8 @@
             z-index: 1;
         }
 
-        #dcotaMenu {
+        /* Slide-up Container Base Layout */
+        .panel-container {
             position: fixed;
             bottom: -100%;
             left: 0;
@@ -49,12 +50,23 @@
             background-color: #f2f2f7;
             z-index: 100;
             transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            padding: 60px 16px env(safe-area-inset-bottom) 16px;
+            padding: 60px 16px calc(env(safe-area-inset-bottom) + 20px) 16px;
             overflow-y: auto;
         }
         
-        #dcotaMenu.active {
+        .panel-container.active {
             bottom: 0;
+        }
+
+        /* Sub-panel transitions sideways (Store Info) */
+        #storeInfoMenu {
+            z-index: 101;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            bottom: 0; /* Always stay active context bounds vertically */
+        }
+        #storeInfoMenu.active {
+            transform: translateX(0);
         }
 
         .menu-header {
@@ -68,7 +80,7 @@
             font-weight: 700;
             color: #000;
         }
-        .done-btn {
+        .nav-btn {
             font-size: 17px;
             font-weight: 600;
             color: #f06c24; 
@@ -148,6 +160,7 @@
             border-bottom: 1px solid #f2f2f7;
             text-decoration: none;
             color: #000;
+            cursor: pointer;
         }
         .settings-row:last-child {
             border-bottom: none;
@@ -170,6 +183,10 @@
             font-size: 17px;
             font-weight: 400;
         }
+        .row-value {
+            font-size: 17px;
+            color: #8e8e93;
+        }
         .row-subtitle {
             font-size: 12px;
             color: #8e8e93;
@@ -180,6 +197,16 @@
             font-weight: 600;
             font-size: 16px;
         }
+
+        /* Build Info Footer */
+        .menu-footer {
+            text-align: center;
+            color: #8e8e93;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
@@ -189,10 +216,10 @@
         Your browser does not support the video tag.
     </video>
 
-    <div id="dcotaMenu">
+    <div id="dcotaMenu" class="panel-container">
         <div class="menu-header">
             <h1 class="menu-title">DCOTA Settings</h1>
-            <button class="done-btn" id="closeMenuBtn">Done</button>
+            <button class="nav-btn" id="closeMenuBtn">Done</button>
         </div>
 
         <div class="info-card">
@@ -213,7 +240,7 @@
         </div>
 
         <div class="settings-group">
-            <div class="settings-row">
+            <div class="settings-row" id="storeInfoRow">
                 <div class="row-icon" style="background-color: #8e8e93;">🏢</div>
                 <div class="row-text">
                     <div class="row-title">Store Info</div>
@@ -265,13 +292,56 @@
                 </div>
             </div>
         </div>
+
+        <div class="menu-footer">
+            <div>DCOTA Version 4.8.2 (Build 24A335)</div>
+            <div>Asset Catalog: v2026.06.28</div>
+        </div>
+    </div>
+
+    <div id="storeInfoMenu" class="panel-container">
+        <div class="menu-header">
+            <h1 class="menu-title">Store Info</h1>
+            <button class="nav-btn" id="backMenuBtn">Back</button>
+        </div>
+
+        <div class="section-label">Location Details</div>
+        <div class="settings-group">
+            <div class="settings-row">
+                <div class="row-text"><div class="row-title">Store Number</div></div>
+                <div class="row-value">R012</div>
+            </div>
+            <div class="settings-row">
+                <div class="row-text"><div class="row-title">Layout Configuration</div></div>
+                <div class="row-value">Standard Retail</div>
+            </div>
+            <div class="settings-row">
+                <div class="row-text"><div class="row-title">Demo Profile</div></div>
+                <div class="row-value">iPhone Front-of-House</div>
+            </div>
+        </div>
+
+        <div class="section-label">Network Status</div>
+        <div class="settings-group">
+            <div class="settings-row">
+                <div class="row-text"><div class="row-title">Deployment Server</div></div>
+                <div class="row-value">demoloop-api.dcota</div>
+            </div>
+            <div class="settings-row">
+                <div class="row-text"><div class="row-title">Profile Sync</div></div>
+                <div class="row-value" style="color: #34c759;">Success</div>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('loopVideo');
             const menu = document.getElementById('dcotaMenu');
+            const storeMenu = document.getElementById('storeInfoMenu');
             const closeBtn = document.getElementById('closeMenuBtn');
+            const storeRow = document.getElementById('storeInfoRow');
+            const backBtn = document.getElementById('backMenuBtn');
             
             let gestureTimer = null;
             const HOLD_DURATION = 1500; 
@@ -280,19 +350,15 @@
                 document.addEventListener('touchstart', () => { video.play(); }, { once: true });
             });
 
-            // UPDATED GESTURE LOGIC: Restricted to upper right corner
+            // 3-Finger Top-Right Trigger Loop
             document.body.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 3) {
                     const screenWidth = window.innerWidth;
                     const screenHeight = window.innerHeight;
-                    
                     let allFingersInCorner = true;
                     
-                    // Check the coordinate of each of the 3 active fingers
                     for (let i = 0; i < e.touches.length; i++) {
                         const touch = e.touches[i];
-                        
-                        // Upper Right definition: X coordinate must be in the right half, Y in the top third
                         const isInRightHalf = touch.clientX > (screenWidth / 2);
                         const isInTopThird = touch.clientY < (screenHeight / 3);
                         
@@ -318,8 +384,18 @@
                 }
             }, { passive: true });
 
+            // Menu Screen Navigation Handlers
             closeBtn.addEventListener('click', () => {
                 menu.classList.remove('active');
+                storeMenu.classList.remove('active'); // Reset sub-menus on close
+            });
+
+            storeRow.addEventListener('click', () => {
+                storeMenu.classList.add('active');
+            });
+
+            backBtn.addEventListener('click', () => {
+                storeMenu.classList.remove('active');
             });
         });
     </script>
