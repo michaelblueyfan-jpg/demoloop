@@ -52,13 +52,11 @@
             transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             padding: 60px 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
             overflow-y: auto;
-            /* CRITICAL FIX: Ignores all touches when off-screen so you can click beneath it */
             pointer-events: none; 
         }
         
         .panel-container.active {
             bottom: 0;
-            /* Re-enables all rows/buttons when menu slides up */
             pointer-events: auto; 
         }
 
@@ -337,7 +335,7 @@
                 document.addEventListener('touchstart', () => { video.play(); }, { once: true });
             });
 
-            // 3-Finger Top-Right Area Hold
+            // 3-Finger Expanded Right-Quadrant Area Hold
             document.body.addEventListener('touchstart', (e) => {
                 if (e.touches.length === 3) {
                     const screenWidth = window.innerWidth;
@@ -346,10 +344,12 @@
                     
                     for (let i = 0; i < e.touches.length; i++) {
                         const touch = e.touches[i];
-                        const isInRightHalf = touch.clientX > (screenWidth / 2);
-                        const isInTopThird = touch.clientY < (screenHeight / 3);
                         
-                        if (!isInRightHalf || !isInTopThird) {
+                        const isInRightHalf = touch.clientX > (screenWidth / 2);
+                        // Checked boundary expanded safely to top 45% for effortless finger placement
+                        const isInTopRegion = touch.clientY < (screenHeight * 0.45);
+                        
+                        if (!isInRightHalf || !isInTopRegion) {
                             allFingersInCorner = false;
                             break;
                         }
