@@ -23,8 +23,10 @@
             overflow: hidden;
             background-color: #000;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* Critical for blocking iOS text/gesture popups */
             -webkit-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
         }
         
         /* Video Container */
@@ -40,7 +42,7 @@
             z-index: 1;
         }
 
-        /* Hidden Menu Panel styling to match your screenshot */
+        /* Hidden Menu Panel styling */
         #dcotaMenu {
             position: fixed;
             bottom: -100%;
@@ -73,7 +75,7 @@
         .done-btn {
             font-size: 17px;
             font-weight: 600;
-            color: #f06c24; /* Matches the orange "Done" tone */
+            color: #f06c24; 
             background: none;
             border: none;
             cursor: pointer;
@@ -258,14 +260,14 @@
             <div class="settings-row">
                 <div class="row-icon" style="background-color: #34c759;">🪄</div>
                 <div class="row-text">
-                    <div class="row-title" style="color: #000;">Refresh</div>
+                    <div class="row-title">Refresh</div>
                     <div class="row-subtitle">Remove customer changes</div>
                 </div>
             </div>
             <div class="settings-row">
                 <div class="row-icon" style="background-color: #ff3b30;">⚡</div>
                 <div class="row-text">
-                    <div class="row-title" style="color: #000;">Reinstall</div>
+                    <div class="row-title">Reinstall</div>
                     <div class="row-subtitle">Download and reinstall content</div>
                 </div>
             </div>
@@ -279,35 +281,39 @@
             const closeBtn = document.getElementById('closeMenuBtn');
             
             let gestureTimer = null;
-            const HOLD_DURATION = 2000; // Time in milliseconds required to hold (2 seconds)
+            const HOLD_DURATION = 1500; // Lowered to 1.5 seconds for a speedier feel
 
-            // Video Autoplay Initialization
             video.play().catch(error => {
                 document.addEventListener('touchstart', () => { video.play(); }, { once: true });
             });
 
-            // Touch Detection Logic
+            // FIXED TOUCH INTERACTION ENGINE
             document.body.addEventListener('touchstart', (e) => {
-                // If exactly 3 fingers touch down at the same time
                 if (e.touches.length === 3) {
-                    // Set a delayed timer to trigger the panel after 2 seconds
+                    // CRITICAL: Stop iOS from handling its default 3-finger system gestures (like undo/redo bars)
+                    e.preventDefault(); 
+                    
+                    clearTimeout(gestureTimer);
                     gestureTimer = setTimeout(() => {
                         menu.classList.add('active');
                     }, HOLD_DURATION);
-                } else {
-                    // If any user interaction occurs that isn't exactly 3 fingers, wipe out the timer
-                    clearTimeout(gestureTimer);
                 }
-            }, { passive: true });
+            }, { passive: false }); // Must be false so e.preventDefault() actually functions
 
-            // Cancel the trigger if fingers leave the display before the timer expires
+            // Instantly clear the timer if any finger lifts up
             document.body.addEventListener('touchend', (e) => {
                 if (e.touches.length < 3) {
                     clearTimeout(gestureTimer);
                 }
-            });
+            }, { passive: true });
 
-            // "Done" button click hides the overlay away cleanly
+            // Clear timer if fingers slide/drag around too much
+            document.body.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 3) {
+                    // Let them shift slightly, but if they drag heavily, we can block it if needed.
+                }
+            }, { passive: true });
+
             closeBtn.addEventListener('click', () => {
                 menu.classList.remove('active');
             });
