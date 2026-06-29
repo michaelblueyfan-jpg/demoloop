@@ -48,19 +48,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('loopVideo');
             
-            // Autoplay logic
+            // Reliable autoplay/resume logic for iOS
             video.play().catch(error => {
-                console.log("Autoplay prevented.");
+                console.log("Autoplay prevented. Tap once to initiate playback.");
+                document.addEventListener('touchstart', () => { 
+                    video.play(); 
+                }, { once: true });
             });
-
-            // Tap anywhere to close via window trick
-            document.body.addEventListener('touchstart', () => {
-                // 1. Trick Safari into thinking this window was opened by a script
-                window.open('', '_self');
-                
-                // 2. Immediately execute the close command
-                window.close();
-            }, { passive: true });
         });
     </script>
 </body>
