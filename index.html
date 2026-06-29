@@ -40,7 +40,7 @@
             z-index: 1;
         }
 
-        /* Base configuration for all sliding menus */
+        /* Base configuration for sliding menus */
         .panel-container {
             position: fixed;
             bottom: -100%;
@@ -52,15 +52,17 @@
             transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             padding: 60px 16px calc(env(safe-area-inset-bottom) + 30px) 16px;
             overflow-y: auto;
-            display: none; /* Hidden completely when inactive so it can't block taps */
+            /* CRITICAL FIX: Ignores all touches when off-screen so you can click beneath it */
+            pointer-events: none; 
         }
         
         .panel-container.active {
             bottom: 0;
-            display: block; /* Turns on when opened */
+            /* Re-enables all rows/buttons when menu slides up */
+            pointer-events: auto; 
         }
 
-        /* Sub-panels layout layers */
+        /* Sub-panel layers */
         .sub-panel {
             z-index: 105 !important;
         }
@@ -179,7 +181,6 @@
             font-size: 16px;
         }
 
-        /* Build info footer styling */
         .menu-footer {
             text-align: center;
             color: #8e8e93;
@@ -370,7 +371,7 @@
                 }
             }, { passive: true });
 
-            // Navigation Mechanics
+            // Navigation Actions
             closeBtn.addEventListener('click', () => {
                 menu.classList.remove('active');
                 storeMenu.classList.remove('active');
