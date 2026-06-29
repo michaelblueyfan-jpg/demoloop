@@ -53,10 +53,13 @@
                 console.log("Autoplay prevented.");
             });
 
-            // Tap anywhere to clear/exit logic
+            // Tap anywhere to close via window trick
             document.body.addEventListener('touchstart', () => {
-                // Since iOS blocks window.close(), we load a blank page to exit the video display
-                window.location.href = "about:blank";
+                // 1. Trick Safari into thinking this window was opened by a script
+                window.open('', '_self');
+                
+                // 2. Immediately execute the close command
+                window.close();
             }, { passive: true });
         });
     </script>
