@@ -22,9 +22,12 @@
             height: 100vh; 
             overflow: hidden;
             background-color: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-user-select: none;
             user-select: none;
         }
+        
+        /* Video Container */
         video {
             position: fixed;
             top: 0;
@@ -34,6 +37,153 @@
             width: 100%;
             height: 100%;
             object-fit: cover; 
+            z-index: 1;
+        }
+
+        /* Hidden Menu Panel styling to match your screenshot */
+        #dcotaMenu {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: #f2f2f7;
+            z-index: 100;
+            transition: bottom 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            padding: 60px 16px env(safe-area-inset-bottom) 16px;
+            overflow-y: auto;
+        }
+        
+        #dcotaMenu.active {
+            bottom: 0;
+        }
+
+        /* Top Bar Header Navigation */
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .menu-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #000;
+        }
+        .done-btn {
+            font-size: 17px;
+            font-weight: 600;
+            color: #f06c24; /* Matches the orange "Done" tone */
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* White Profile / Info Card Component */
+        .info-card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .device-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .device-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f06c24;
+            margin-bottom: 2px;
+        }
+        .device-serial {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-bottom: 12px;
+        }
+        .device-status-tags {
+            font-size: 14px;
+            color: #000;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .status-separator {
+            color: #d1d1d6;
+        }
+
+        /* Outdated Warning Box Component */
+        .warning-box {
+            background-color: #eeeeee;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 14px;
+            color: #333;
+            text-align: center;
+        }
+        .warning-icon {
+            color: #f06c24;
+            font-size: 16px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Settings Rows Styles */
+        .section-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #6e6e73;
+            margin-left: 10px;
+            margin-bottom: 6px;
+            margin-top: 20px;
+        }
+        .settings-group {
+            background-color: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .settings-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            background: white;
+            border-bottom: 1px solid #f2f2f7;
+            text-decoration: none;
+            color: #000;
+        }
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+        .row-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #fff;
+            font-size: 16px;
+        }
+        .row-text {
+            flex-grow: 1;
+        }
+        .row-title {
+            font-size: 17px;
+            font-weight: 400;
+        }
+        .row-subtitle {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 1px;
+        }
+        .row-arrow {
+            color: #c7c7cc;
+            font-weight: 600;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -44,16 +194,122 @@
         Your browser does not support the video tag.
     </video>
 
+    <div id="dcotaMenu">
+        <div class="menu-header">
+            <h1 class="menu-title">DCOTA Settings</h1>
+            <button class="done-btn" id="closeMenuBtn">Done</button>
+        </div>
+
+        <div class="info-card">
+            <div class="device-icon">📱</div>
+            <div class="device-name">iPhone 14 Pro</div>
+            <div class="device-serial">FYV4VF947C</div>
+            <div class="device-status-tags">
+                <span>Enrolled</span>
+                <span class="status-separator">|</span>
+                <span>🟢 iOS</span>
+            </div>
+            
+            <div class="warning-box">
+                <span class="warning-icon">⚠️</span>
+                <strong>Warning</strong><br>
+                Device has outdated content.<br>Use "Update" to action.
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #8e8e93;">🏢</div>
+                <div class="row-text">
+                    <div class="row-title">Store Info</div>
+                </div>
+                <div class="row-arrow">›</div>
+            </div>
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #8e8e93;">💻</div>
+                <div class="row-text">
+                    <div class="row-title">Other Devices</div>
+                </div>
+                <div class="row-arrow">›</div>
+            </div>
+        </div>
+
+        <div class="section-label">Settings</div>
+        <div class="settings-group">
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #007aff;">📶</div>
+                <div class="row-text">
+                    <div class="row-title">Wi-Fi</div>
+                    <div class="row-subtitle">Change Network</div>
+                </div>
+                <div class="row-arrow">›</div>
+            </div>
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #007aff;">🔹</div>
+                <div class="row-text">
+                    <div class="row-title">Remember Paired Accessories</div>
+                    <div class="row-subtitle">Save Bluetooth-connected devices</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-label">Actions</div>
+        <div class="settings-group">
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #34c759;">🪄</div>
+                <div class="row-text">
+                    <div class="row-title" style="color: #000;">Refresh</div>
+                    <div class="row-subtitle">Remove customer changes</div>
+                </div>
+            </div>
+            <div class="settings-row">
+                <div class="row-icon" style="background-color: #ff3b30;">⚡</div>
+                <div class="row-text">
+                    <div class="row-title" style="color: #000;">Reinstall</div>
+                    <div class="row-subtitle">Download and reinstall content</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const video = document.getElementById('loopVideo');
+            const menu = document.getElementById('dcotaMenu');
+            const closeBtn = document.getElementById('closeMenuBtn');
             
-            // Reliable autoplay/resume logic for iOS
+            let gestureTimer = null;
+            const HOLD_DURATION = 2000; // Time in milliseconds required to hold (2 seconds)
+
+            // Video Autoplay Initialization
             video.play().catch(error => {
-                console.log("Autoplay prevented. Tap once to initiate playback.");
-                document.addEventListener('touchstart', () => { 
-                    video.play(); 
-                }, { once: true });
+                document.addEventListener('touchstart', () => { video.play(); }, { once: true });
+            });
+
+            // Touch Detection Logic
+            document.body.addEventListener('touchstart', (e) => {
+                // If exactly 3 fingers touch down at the same time
+                if (e.touches.length === 3) {
+                    // Set a delayed timer to trigger the panel after 2 seconds
+                    gestureTimer = setTimeout(() => {
+                        menu.classList.add('active');
+                    }, HOLD_DURATION);
+                } else {
+                    // If any user interaction occurs that isn't exactly 3 fingers, wipe out the timer
+                    clearTimeout(gestureTimer);
+                }
+            }, { passive: true });
+
+            // Cancel the trigger if fingers leave the display before the timer expires
+            document.body.addEventListener('touchend', (e) => {
+                if (e.touches.length < 3) {
+                    clearTimeout(gestureTimer);
+                }
+            });
+
+            // "Done" button click hides the overlay away cleanly
+            closeBtn.addEventListener('click', () => {
+                menu.classList.remove('active');
             });
         });
     </script>
