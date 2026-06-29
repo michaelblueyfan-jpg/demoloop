@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <link align="apple-touch-icon" href="app_icon.png">
+    <link rel="apple-touch-icon" href="app_icon.png">
     
     <title>DemoLoop</title>
     
@@ -53,9 +53,10 @@
                 console.log("Autoplay prevented.");
             });
 
-            // Tap anywhere to close logic
+            // Tap anywhere to clear/exit logic
             document.body.addEventListener('touchstart', () => {
-                window.close();
+                // Since iOS blocks window.close(), we load a blank page to exit the video display
+                window.location.href = "about:blank";
             }, { passive: true });
         });
     </script>
