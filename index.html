@@ -19,20 +19,21 @@
         }
         body, html {
             width: 100%;
-            /* Forces container past the iOS home-indicator threshold */
-            height: calc(100vh + env(safe-area-inset-bottom));
-            height: calc(100dvh + env(safe-area-inset-bottom));
-            margin-bottom: -env(safe-area-inset-bottom);
+            /* 100vh is strictly required here; 100dvh causes a cold-start gap bug in PWAs */
+            height: 100vh; 
             overflow: hidden;
             background-color: #000;
         }
         video {
+            /* Position fixed with 0 bounds anchors the element perfectly to the glass edges */
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
             width: 100%;
             height: 100%;
             object-fit: cover; 
-            position: absolute;
-            top: 0;
-            left: 0;
         }
     </style>
 </head>
