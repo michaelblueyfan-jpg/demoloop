@@ -26,7 +26,8 @@
         video {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Changed to contain so a vertical video fits perfectly */
+            /* 'cover' forces the video to stretch and fill the display completely, ignoring aspect ratio letterboxing */
+            object-fit: cover; 
             position: absolute;
             top: 0;
             left: 0;
